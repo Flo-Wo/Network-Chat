@@ -16,7 +16,7 @@ quitServer = False
 
 try:
     while quitServer == False:
-        #Verbdingungssocket
+        #Verbindungssocket
         komm, addr = s.accept()
         while quitServer == False:
             #Kommunikationssocket
