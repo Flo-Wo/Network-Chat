@@ -3,9 +3,27 @@
 Date: 14.01.2017
 """
 import socket
+import os
 
-#Eingabe der IP-Adresse
-ip = input("IP-Adresse des Zielservers: ")
+#Eingabe der IP-Adresse, entweder lokal Ethernet Verbindungen oder über eine Eingabe
+Eingabe = input("Verbindung zu einem Rechner im lokalen Netzwerk aufbauen (Ja/Nein): ")
+
+if Eingabe == "Ja":
+    print("Liste aller über Ethernet verbunden Geräte:\n\n")
+    rechner = os.popen("arp -a").readlines()
+    for i in range (0, len(rechner)):           #braucht nicht -1, range immer < als Angabe ist
+        nummer = str(i) + ": "                  #Nummer vor Listenobjekt
+        print(nummer + rechner[i])
+    index = int(input("wähle deine Ziel-IP aus (Nummer): "))
+    rechnerneu = rechner[index].split(" ")      #String --> Liste
+    rechnerwert = rechnerneu[1]                 #Index der IP in der Liste
+    rechner1 = rechnerwert.replace("(", "")
+    ip = rechner1.replace(")", "")   #Entfernen der Klammern--> IP
+    #print(ip)
+elif Eingabe == "Nein":
+    ip = input("IP-Adresse des Zielservers: ")
+else:
+    print("Ungültige Eingabe.")
 
 #Aufbau des Sockets
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
