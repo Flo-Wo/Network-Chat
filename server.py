@@ -9,19 +9,22 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(("", 50000))
 s.listen(1)
 
+#Server zeigt IP-Adresse über Systembefehl an
 e = input("Eigene IP-Adresse anzeigen? (ja/nein) ")
 if e == "ja":
     alleips = os.popen("ifconfig |grep inet").readlines()
-    alleips = alleips[4].split(" ")
+    alleips = alleips[6].split(" ")
     print("Deine IP-Adresse lautet: " + alleips[1])
     print("Server startet...\n")
 elif e == "nein":
-    print("Server startet...\n")
+    print("Server startet...")
 else:
     print("Ungültige Eingabe.\nServer startet...\n")
 
+#Namenseingabe
 name = str(input("Dein Name: ")) + ": "
 
+#Abbruchbedingung
 quitServer = False
 
 try:
@@ -33,6 +36,7 @@ try:
             data = komm.recv(1024)
             print(data.decode())
             nachricht = str(input("Antwort: "))
+            #Abbruchanweisung, Client wird benachrichtigt
             if nachricht == "quit()":
                 quitServer = True
                 nachricht = "\nDer Server hat die Kommunikation beendet.\n"
@@ -42,7 +46,9 @@ try:
                 #Konvertierung, Name dazu
                 nachricht = name + nachricht + "\n"
                 komm.send(nachricht.encode())
+#Ende der Kommunikation
 finally:
+    komm.close()
     s.close()
     print("""\
 \n
