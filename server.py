@@ -13,7 +13,8 @@ s.listen(1)
 e = input("Eigene IP-Adresse anzeigen? (ja/nein) ")
 if e == "ja":
     alleips = os.popen("ifconfig |grep inet").readlines()
-    alleips = alleips[6].split(" ")
+    #mal 4 und mal 7?!
+    alleips = alleips[4].split(" ")
     print("Deine IP-Adresse lautet: " + alleips[1])
     print("Server startet...\n")
 elif e == "nein":
@@ -39,7 +40,12 @@ try:
             #Abbruchanweisung, Client wird benachrichtigt
             if nachricht == "quit()":
                 quitServer = True
-                nachricht = "\nDer Server hat die Kommunikation beendet.\n"
+                nachricht = """\
+                \n
+-----------------------------------------
+Der Server hat die Kommunikation beendet.
+-----------------------------------------
+                """
                 komm.send(nachricht.encode())
                 break
             else:

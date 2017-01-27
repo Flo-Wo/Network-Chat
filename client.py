@@ -64,6 +64,13 @@ try:
         nachricht = input("Nachricht: ")
         # Abbruch der Kommunikation
         if nachricht == "quit()":
+            nachricht = """\
+            \n
+-----------------------------------------
+Der Client hat die Kommunikation beendet.
+-----------------------------------------
+            """
+            s.send(nachricht.encode())
             quitClient = True
             break
         nachricht = name + nachricht + "\n"
