@@ -7,8 +7,7 @@ import os
 
 # Server IP, entweder Rechner im lokalen Netzwerk (WLan und Ethernet) oder
 # über eine manuelle Eingabe
-eingabe = input(
-    "Verbindung zu einem Rechner im lokalen Netzwerk aufbauen (ja/nein): ")
+eingabe = input("Verbindung zu einem Rechner im lokalen Netzwerk aufbauen (ja/nein): ")
 
 if eingabe == "ja":
     print("Liste aller über Ethernet verbunden Geräte:\n\n")
@@ -40,7 +39,7 @@ if eingabe == "ja":
             print("Verbindung zum Server wird aufgebaut...\n")
         # Der Nutzer kommt trotzdem noch zur manuellen Eingabe
         else:
-            print("Ungültie Eingabe.")
+            print("Ungültie Eingabe. Manuelle Eingabe der IP-Adresse folgt...")
 # Manuelle Eingabe
 elif eingabe == "nein":
     ip = input("IP-Adresse des Zielservers: ")
