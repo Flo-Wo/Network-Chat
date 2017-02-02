@@ -79,7 +79,8 @@ Der Server hat die Kommunikation beendet.
             else:
                 #Konvertierung, Name dazu
                 nachricht = name + nachricht + "\n"
-                komm.send(nachricht.encode())
+                chiffrat = chiffreclient.encrypt(nachricht)
+                komm.send(chiffrat.encode())
 #Ende der Kommunikation
 finally:
     komm.close()

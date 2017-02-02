@@ -95,7 +95,8 @@ try:
 Der Client hat die Kommunikation beendet.
 -----------------------------------------
             """
-            s.send(nachricht.encode())
+            chiffrat = chiffreserver.encrypt(nachricht)
+            s.send(chiffrat.encode())
             quitClient = True
             break
         nachricht = name + nachricht + "\n"
