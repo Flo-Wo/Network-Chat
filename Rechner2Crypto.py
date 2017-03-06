@@ -1,6 +1,5 @@
 """!/usr/bin/python
 -*- coding: UTF-8 -*-
-Date: 02.02.2017
 """
 import socket
 import os
@@ -8,7 +7,7 @@ import os
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 
-# Server IP, entweder Rechner im lokalen Netzwerk (WLan und Ethernet) oder
+# IP Rechner 1, entweder Rechner im lokalen Netzwerk (WLan und Ethernet) oder
 # über eine manuelle Eingabe
 eingabe = input("Verbindung zu einem Rechner im lokalen Netzwerk aufbauen (ja/nein): ")
 
@@ -32,84 +31,86 @@ if eingabe == "ja":
         # Entfernen der Klammern, da IP als Tupel vorliegt --> IP
         rechner1 = rechnerwert.replace("(", "")
         ip = rechner1.replace(")", "")
-        print("Verbindung zum Server wird aufgebaut...\n")
+        print("Verbindung zum Zielrechner wird aufgebaut...\n")
         # print(ip)
     # Eingabe nicht konvertierbar --> "nicht in der Liste"
     except ValueError:
         # Manuelle Eingabe der IP, falls die Ziel-IP nicht in der Liste ist
         if index == "nicht in der Liste":
-            ip = input("IP-Adresse des Zielservers: ")
-            print("Verbindung zum Server wird aufgebaut...\n")
+            ip = input("IP-Adresse des Zielrechners: ")
+            print("Verbindung zum Zielrechner wird aufgebaut...\n")
         # Der Nutzer kommt trotzdem noch zur manuellen Eingabe
         else:
             print("Ungültie Eingabe. Manuelle Eingabe der IP-Adresse folgt...")
 # Manuelle Eingabe
 elif eingabe == "nein":
-    ip = input("IP-Adresse des Zielservers: ")
-    print("Verbindung zum Server wird aufgebaut...\n")
+    ip = input("IP-Adresse des Zielrechners: ")
+    print("Verbindung zum Zielrechner wird aufgebaut...\n")
 else:
     print("Ungültige Eingabe.")
 
 # Aufbau des Sockets
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Verbindung mit dem Server --> Verbindungssocket
+# Verbindung mit dem Zielrechner --> Verbindungssocket
 s.connect((ip, 50000))
 name = str(input("Dein Name: ")) + ": "
 
 
 #Verschlüsselung
 #Schlüsselpaar wird erzeugt
-clientkey = RSA.generate(1024)
+rechner2key = RSA.generate(1024)
 #Public key wird extrahiert
-clientkeypublic = clientkey.publickey()
-#Public Key --> String, damit der Server ihn lesen kann
-clientkey_lesbar = clientkeypublic.exportKey()
+rechner2keypublic = rechner2key.publickey()
+#Public Key --> String, damit der Partner ihn lesen kann
+rechner2key_lesbar = rechner2keypublic.exportKey()
 
 #Seperation des private keys, über PKCS1_OAEP-Verfahren
-clientkeyprivate = PKCS1_OAEP.new(clientkey)
+rechner2keyprivate = PKCS1_OAEP.new(rechner2key)
 
-#öffentlicher Schlüssel des Clients muss nun zum Server
-keysend = clientkey_lesbar
+#öffentlicher Schlüssel muss nun zum Partner
+keysend = rechner2key_lesbar
 s.send(keysend.encode())
 
 keyaccept = s.recv(1024)
-publickeyserver = keyaccept.decode()
-#--> öffentlicher Schlüssel des Servers liegt vor
-chiffreserver = PKCS1_OAEP.new(publickeyserver)
-#öff. Schlüssel des Servers über Verfahren nutzbar gemacht
+publickeyrechner1 = keyaccept.decode()
+#--> öffentlicher Schlüssel des Rechner 1 liegt vor
+chiffrerechner1 = PKCS1_OAEP.new(publickeyrechner1)
+#öff. Schlüssel des Rechner 1 über Verfahren nutzbar gemacht
 
 
 # Abbruchbedingung
-quitClient = False
+quitRechner2 = False
 
 # Kommunikationssocket
 try:
-    while quitClient == False:
+    while quitRechner2 == False:
         nachricht = input("Nachricht: ")
         # Abbruch der Kommunikation
         if nachricht == "quit()":
             nachricht = """\
             \n
------------------------------------------
-Der Client hat die Kommunikation beendet.
------------------------------------------
+-------------------------------------------
+Der Partner hat die Kommunikation beendet.
+-------------------------------------------
             """
-            chiffrat = chiffreserver.encrypt(nachricht)
+            chiffrat = chiffrerechner1.encrypt(nachricht)
             s.send(chiffrat.encode())
-            quitClient = True
+            quitRechner2 = True
             break
         nachricht = name + nachricht + "\n"
-        chiffrat = chiffreserver.encrypt(nachricht)
+        # Verschlüssel der Nachricht
+        chiffrat = chiffrerechner1.encrypt(nachricht)
         s.send(chiffrat.encode())
         antwort = s.recv(1024)
-        print(clientkeyprivate.decrypt(antwort.decode()))
+        #Entschlüsseln der empfangenen Nachricht
+        print(rechner2keyprivate.decrypt(antwort.decode()))
 # Trennen der Verbindung
 finally:
     s.close()
     print("""\
 \n
--------------------------------
-Verbindung zum Server getrennt.
--------------------------------
+-----------------------------------------------
+Verbindung zum Kommunikationspartner getrennt.
+-----------------------------------------------
 """)

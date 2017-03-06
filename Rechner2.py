@@ -1,11 +1,10 @@
 """!/usr/bin/python
 -*- coding: UTF-8 -*-
-Date: 14.01.2017
 """
 import socket
 import os
 
-# Server IP, entweder Rechner im lokalen Netzwerk (WLan und Ethernet) oder
+# Ziel IP, entweder Rechner im lokalen Netzwerk (WLan und Ethernet) oder
 # über eine manuelle Eingabe
 eingabe = input("Verbindung zu einem Rechner im lokalen Netzwerk aufbauen (ja/nein): ")
 
@@ -29,48 +28,48 @@ if eingabe == "ja":
         # Entfernen der Klammern, da IP als Tupel vorliegt --> IP
         rechner1 = rechnerwert.replace("(", "")
         ip = rechner1.replace(")", "")
-        print("Verbindung zum Server wird aufgebaut...\n")
+        print("Verbindung zum Zielrechner wird aufgebaut...\n")
         # print(ip)
     # Eingabe nicht konvertierbar --> "nicht in der Liste"
     except ValueError:
         # Manuelle Eingabe der IP, falls die Ziel-IP nicht in der Liste ist
         if index == "nicht in der Liste":
-            ip = input("IP-Adresse des Zielservers: ")
-            print("Verbindung zum Server wird aufgebaut...\n")
+            ip = input("IP-Adresse des Zielrechners: ")
+            print("Verbindung zum Zielrechner wird aufgebaut...\n")
         # Der Nutzer kommt trotzdem noch zur manuellen Eingabe
         else:
             print("Ungültie Eingabe. Manuelle Eingabe der IP-Adresse folgt...")
 # Manuelle Eingabe
 elif eingabe == "nein":
-    ip = input("IP-Adresse des Zielservers: ")
-    print("Verbindung zum Server wird aufgebaut...\n")
+    ip = input("IP-Adresse des Zielrechers: ")
+    print("Verbindung zum Zielrechner wird aufgebaut...\n")
 else:
     print("Ungültige Eingabe.")
 
 # Aufbau des Sockets
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Verbindung mit dem Server --> Verbindungssocket
+# Verbindung mit dem Zielrechner --> Verbindungssocket
 s.connect((ip, 50000))
 name = str(input("Dein Name: ")) + ": "
 
 # Abbruchbedingung
-quitClient = False
+quitRechner2 = False
 
 # Kommunikationssocket
 try:
-    while quitClient == False:
+    while quitRechner2 == False:
         nachricht = input("Nachricht: ")
         # Abbruch der Kommunikation
         if nachricht == "quit()":
             nachricht = """\
             \n
------------------------------------------
-Der Client hat die Kommunikation beendet.
------------------------------------------
+-------------------------------------------
+Der Partner hat die Kommunikation beendet.
+-------------------------------------------
             """
             s.send(nachricht.encode())
-            quitClient = True
+            quitRechner2 = True
             break
         nachricht = name + nachricht + "\n"
         s.send(nachricht.encode())
@@ -81,7 +80,7 @@ finally:
     s.close()
     print("""\
 \n
--------------------------------
-Verbindung zum Server getrennt.
--------------------------------
+-----------------------------------------------
+Verbindung zum Kommunikationspartner getrennt.
+-----------------------------------------------
 """)

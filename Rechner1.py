@@ -1,6 +1,5 @@
 """!/usr/bin/python
 -*- coding: UTF-8 -*-
-Date: 14.01.2017
 """
 import socket
 import os
@@ -9,42 +8,41 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(("", 50000))
 s.listen(1)
 
-#Server zeigt IP-Adresse über Systembefehl an
+#Zeigt IP-Adresse über Systembefehl an
 e = input("Eigene IP-Adresse anzeigen? (ja/nein) ")
 if e == "ja":
     alleips = os.popen("ifconfig |grep inet").readlines()
-    #mal 4 und mal 7?!
     alleips = alleips[4].split(" ")
     print("Deine IP-Adresse lautet: " + alleips[1])
-    print("Server startet...\n")
+    print("Rechner 1 startet...\n")
 elif e == "nein":
-    print("Server startet...")
+    print("Rechner 1 startet...")
 else:
-    print("Ungültige Eingabe.\nServer startet...\n")
+    print("Ungültige Eingabe.\nRechner 1 startet...\n")
 
 #Namenseingabe
 name = str(input("Dein Name: ")) + ": "
 
 #Abbruchbedingung
-quitServer = False
+quitRechner1 = False
 
 try:
-    while quitServer == False:
+    while quitRechner1 == False:
         #Verbindungssocket
         komm, addr = s.accept()
-        while quitServer == False:
+        while quitRechner1 == False:
             #Kommunikationssocket
             data = komm.recv(1024)
             print(data.decode())
             nachricht = str(input("Antwort: "))
-            #Abbruchanweisung, Client wird benachrichtigt
+            #Abbruchanweisung, Komm.partner wird benachrichtigt
             if nachricht == "quit()":
-                quitServer = True
+                quitRechner1 = True
                 nachricht = """\
                 \n
------------------------------------------
-Der Server hat die Kommunikation beendet.
------------------------------------------
+--------------------------------------------------------
+Der Kommunikationspartner hat die Kommunikation beendet.
+--------------------------------------------------------
                 """
                 komm.send(nachricht.encode())
                 break
@@ -58,7 +56,7 @@ finally:
     s.close()
     print("""\
 \n
-----------------------------------------------------
-Verbindung zum Client getrennt, Server wird beendet.
-----------------------------------------------------
+-------------------------------------------------------------
+Verbindung zum Partner getrennt, Kommunikation wird beendet.
+-------------------------------------------------------------
 """)
